@@ -1,0 +1,95 @@
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Кликер с прогрессивным улучшением</title>
+<style>
+body {
+  font-family: sans-serif;
+  background: #f6f7fb;
+  text-align: center;
+  margin-top: 50px;
+}
+button {
+  padding: 10px 20px;
+  margin: 10px;
+  border: none;
+  border-radius: 8px;
+  background: #3b82f6;
+  color: #fff;
+  cursor: pointer;
+}
+#message {
+  margin-top: 10px;
+  color: #0b8454;
+}
+</style>
+</head>
+<body>
+
+<h1>Кликер</h1>
+<div>Баланс: <span id="balance">0</span></div>
+<div>Доход за клик: <span id="perClick">1</span></div>
+
+<button id="clickBtn">Клик!</button>
+<button id="buyUpgrade">Улучшить ×2 (стоимость 100)</button>
+
+<div id="message"></div>
+
+<script>
+// ===============================
+// Загружаем сохранённые данные или ставим значения по умолчанию
+let balance = parseInt(localStorage.getItem('balance')) || 0;
+let perClick = parseInt(localStorage.getItem('perClick')) || 1;
+let upgradeCost = parseInt(localStorage.getItem('upgradeCost')) || 100; // стоимость улучшения
+
+const balanceEl = document.getElementById('balance');
+const perClickEl = document.getElementById('perClick');
+const buyBtn = document.getElementById('buyUpgrade');
+const messageEl = document.getElementById('message');
+
+// ===============================
+function render() {
+  balanceEl.textContent = balance;
+  perClickEl.textContent = perClick;
+  buyBtn.textContent = `Улучшить ×2 (стоимость ${upgradeCost})`;
+  // сохраняем всё
+  localStorage.setItem('balance', balance);
+  localStorage.setItem('perClick', perClick);
+  localStorage.setItem('upgradeCost', upgradeCost);
+}
+
+// ===============================
+function show(msg) {
+  messageEl.textContent = msg;
+  setTimeout(() => { messageEl.textContent = '' }, 2000);
+}
+
+// ===============================
+// Кнопка «Клик!»
+document.getElementById('clickBtn').addEventListener('click', () => {
+  balance += perClick;
+  render();
+});
+
+// ===============================
+// Кнопка «Улучшить ×2»
+// — умножает доход ×2 и удваивает стоимость для следующего апгрейда
+document.getElementById('buyUpgrade').addEventListener('click', () => {
+  if (balance >= upgradeCost) {
+    balance -= upgradeCost;
+    perClick *= 2;           // доход за клик ×2
+    upgradeCost *= 2;        // стоимость следующего улучшения ×2
+    show('Доход за клик увеличен ×2!');
+    render();
+  } else {
+    show('Недостаточно средств');
+  }
+});
+
+// ===============================
+// Первый рендер при загрузке
+render();
+</script>
+
+</body>
+</html>
